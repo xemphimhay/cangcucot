@@ -36,6 +36,10 @@ jQuery(document).ready(function (dataAndEvents) {
         fx.scrollTo("#watch-block", 1e3);
         return false;
     });
+    jQuery("#btn-toggle-capture").on("click", function() {
+        saveScreenShot("media-player");
+        return false;
+    });
     jQuery("#btn-toggle-error").on("click", function () {
         jQuery
             .ajax({
@@ -112,4 +116,80 @@ jQuery(document).ready(function (dataAndEvents) {
         }
         return false;
     });
+    jQuery("#btn-toggle-download").on("click", function() {
+        if (jwplayer("media-player").getPlaylistItem() == undefined) {
+            fx.alertMessage("Rất tiếc", "Server của tập phim này chưa hỗ trợ download! Bạn hãy dùng Cốc Cốc, IDM hoặc chuyển server khác để download", 'info');
+        } else {
+            var file = jwplayer("media-player").getPlaylistItem()['file'];
+            if (file.includes(".mp4")) {
+                window.open(file, '_blank').blur();
+            } else {
+                fx.alertMessage("Rất tiếc", "Server của tập phim này chưa hỗ trợ download! Bạn hãy dùng Cốc Cốc, IDM hoặc chuyển server khác để download", 'info');
+            }
+        }
+        return false;
+    });
+    jQuery("#btn-nextepisode").on("click", function() {
+        var episodeId = parseInt($("ul.list-episode li a[data-movie='playing']").data("id"));
+        var XMLFile = PLTV.readXml(MAIN_URL + '/ajax/get_episode?filmId=' + filmInfo.filmID + '&episodeId=' + episodeId, "link");
+        if (XMLFile != '')
+            window.location.href = XMLFile;
+        else
+            fx.alertMessage("Thông báo", "Phim này đã hết tập để play!", 'info');
+        return false;
+    });
 });
+function saveScreenShot(Z) {
+    var H = document.getElementById(jwplayer(Z).id);
+    var B = (H) ? H.querySelector("video") : undefined;
+    if (B) {
+        jwplayer().pause(!0);
+        var F = 1;
+        var D = document.createElement("canvas");
+        D.width = B.videoWidth * F;
+        D.height = B.videoHeight * F;
+        Dwidth = window.innerWidth * 0.5;
+        Dwidth100 = Dwidth / (D.width / 100);
+        Dheight = (D.height / 100) * Dwidth100;
+        if (Dheight > 600) {
+            Dheight = 600;
+            Dheight100 = Dheight / (D.height / 100);
+            Dwidth = D.width / 100 * Dheight100
+        }
+        D.setAttribute("style", "height:" + Dheight + "px");
+        D.getContext("2d").drawImage(B, 0, 0, D.width, D.height);
+        var G = document.createElement("div");
+        var K = (window.innerHeight - Dheight - 50) / 2 + "px";
+        var L = (window.innerWidth - Dwidth) / 2 + "px";
+        if (window.innerWidth < 450) {
+            L = "0px";
+            Dwidth = window.innerWidth
+        }
+        var C = document.createElement("div");
+        var E = "position: fixed;z-index: 9999999999999;width:" + Dwidth + "px; left: " + L + ";top:0";
+        E += ";padding-bottom:10px; background: #fff;";
+        E += "text-align: center;border: 1px solid rgba(0, 0, 0, 0.23);";
+        C.setAttribute("style", "display: block;");
+        C.appendChild(D);
+        G.setAttribute("id", "popupSave");
+        G.setAttribute("style", E);
+        var J = document.createElement("span");
+        J.innerHTML = 'Nhấp chuột phải vào màn hình chọn ( Lưu hình ảnh thành ) hoặc (Save image as)';
+        J.setAttribute("style", "margin: 10px;display: block;font-weight: bold;");
+        var I = document.createElement("a");
+        I.innerHTML = "Đóng";
+        E = "display: inline-block; margin: 0px auto;background-color: #337ab7;";
+        E += "margin-top: 10px; padding: 5px 10px;";
+        E += "color: #fff; border-radius: 5px; border: 1px solid #ccc; cursor: pointer;";
+        I.setAttribute("style", E);
+        I.onclick = function() {
+            document.getElementById("popupSave").remove();
+            loadVideo(infoLoad.links, null, jwplayer().getPosition(), jQuery("#media-player").width(), jQuery("#media-player").height())
+        }
+        ;
+        G.appendChild(J);
+        G.appendChild(C);
+        G.appendChild(I);
+        document.body.appendChild(G)
+    }
+}
