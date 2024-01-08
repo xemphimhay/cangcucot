@@ -174,6 +174,7 @@
                 <div class="Lnk AAIco-lightbulb_outline" id="btn-light" title="Tắt đèn nền">Tắt đèn</div>
                 <div class="Lnk AAIco-launch" id="btn-expand"><span id="expand-status">Phóng to</span></div>
                 <div class="Lnk AAIco-error" id="btn-toggle-error" title="Báo lỗi cho admin!">Báo lỗi</div>
+                <div class="Lnk AAIco-camera_enhance" id="btn-toggle-capture" title="Chụp ảnh">Chụp ảnh</div>
             </div>
         </div>
 
